@@ -13,6 +13,7 @@ datasource db {
 enum Language {
   javascript
   typescript
+  go
 }
 
 enum SessionStatus {

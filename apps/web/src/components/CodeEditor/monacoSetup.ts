@@ -27,10 +27,6 @@ const compilerOptions: monaco.languages.typescript.CompilerOptions = {
 ts.typescriptDefaults.setCompilerOptions(compilerOptions);
 ts.javascriptDefaults.setCompilerOptions({ ...compilerOptions, allowJs: true, checkJs: false });
 
-/** Model URI for a task document; the extension enables JSX in both languages. */
-export const modelPath = (prefix: string, id: string, language: string) =>
-  `file:///${prefix}-${id}.${language === 'javascript' ? 'jsx' : 'tsx'}`;
-
 // React type definitions for IntelliSense (`import { useState } from 'react'`, JSX elements).
 // Loaded lazily so they don't weigh on the initial bundle.
 const typeFiles = import.meta.glob<string>(
@@ -54,3 +50,4 @@ void Promise.all(
 loader.config({ monaco });
 
 export { monaco };
+export { canFormat, modelPath } from './languages';

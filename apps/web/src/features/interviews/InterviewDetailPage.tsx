@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import type { TaskDto } from '@ti/shared';
+import { LANGUAGE_LABELS, type TaskDto } from '@ti/shared';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { InviteLinkDialog } from '../../components/common/InviteLinkDialog';
@@ -126,7 +126,7 @@ export function InterviewDetailPage() {
                     <span>
                       {i + 1}. {t.title}
                     </span>
-                    <Chip size="small" label={t.language === 'typescript' ? 'TS' : 'JS'} />
+                    <Chip size="small" label={LANGUAGE_LABELS[t.language].short} />
                   </Stack>
                 }
                 secondary={t.description.slice(0, 120) || 'No description'}

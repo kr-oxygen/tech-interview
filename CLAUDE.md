@@ -50,7 +50,7 @@ docs/adr/         Architecture Decision Records
 - **Single instance:** document state, presence, grace timers and session queues are in-memory. Running more than one API instance needs ADR-0007 to be revisited first.
 - **Observations (insights) are derived**, not stored: `detectInsights`/`computeAllInsights` in `activity/insights.ts`, thresholds in `insights.config.ts`. Wording must stay neutral ("observation", never "cheating").
 - **Task states exist from session creation** (`DocumentStateService.ensureTaskStates`, also called on exchange and monitor join; race-safe through the unique `(sessionId, taskId)`), so the monitor shows the starter code before the candidate opens the link.
-- **Editor models are `.tsx`/`.jsx`** (`modelPath` in `monacoSetup.ts`), with `jsx: react-jsx` and the React typings from `@types/react` + `csstype` loaded as extra libs. Use `modelPath` for every Monaco model path.
+- **Editor models are `.tsx`/`.jsx`/`.go`** (`modelPath` in `components/CodeEditor/languages.ts`, re-exported from `monacoSetup.ts`). JS/TS use `jsx: react-jsx` and the React typings from `@types/react` + `csstype`, loaded as extra libs. Go (`LANGUAGES` in shared) has Monaco syntax highlighting only: no diagnostics or IntelliSense, no formatter (`canFormat`), and tab indentation. Use `modelPath` for every Monaco model path; adding a language means updating the Prisma enum (migration), `LANGUAGES`/`LANGUAGE_LABELS` and `languages.ts`.
 - Server-only `RealtimeService.disconnectCandidate` is deferred ~250 ms so the final ack/status reaches the client.
 
 ## Sharing over the internet (tunnel)

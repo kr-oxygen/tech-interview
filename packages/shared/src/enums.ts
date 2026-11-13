@@ -1,5 +1,12 @@
-export const LANGUAGES = ['javascript', 'typescript'] as const;
+export const LANGUAGES = ['javascript', 'typescript', 'go'] as const;
 export type Language = (typeof LANGUAGES)[number];
+
+/** Display names: `name` for text, `short` for chips. */
+export const LANGUAGE_LABELS: Record<Language, { name: string; short: string }> = {
+  typescript: { name: 'TypeScript', short: 'TS' },
+  javascript: { name: 'JavaScript', short: 'JS' },
+  go: { name: 'Go', short: 'Go' },
+};
 
 export const SESSION_STATUSES = ['CREATED', 'ACTIVE', 'LOCKED', 'ENDED', 'EXPIRED'] as const;
 export type SessionStatus = (typeof SESSION_STATUSES)[number];

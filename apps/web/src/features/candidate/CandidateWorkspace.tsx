@@ -17,12 +17,12 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { C2S, type SessionDto } from '@ti/shared';
+import { C2S, LANGUAGE_LABELS, type SessionDto } from '@ti/shared';
 import type { editor } from 'monaco-editor';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CodeEditor } from '../../components/CodeEditor/CodeEditor';
 import { EditorToolbar } from '../../components/CodeEditor/EditorToolbar';
-import { modelPath, monaco } from '../../components/CodeEditor/monacoSetup';
+import { canFormat, modelPath, monaco } from '../../components/CodeEditor/monacoSetup';
 import { CenteredMessage } from '../../components/common/CenteredMessage';
 import { ConnectionChip } from '../../components/common/ConnectionChip';
 import { InterviewTimer } from '../../components/common/InterviewTimer';
@@ -223,7 +223,7 @@ export function CandidateWorkspace({ candidateToken, onAccessLost }: Props) {
               {activeTask.title}
             </Typography>
             <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-              Language: {activeTask.language === 'typescript' ? 'TypeScript' : 'JavaScript'}
+              Language: {LANGUAGE_LABELS[activeTask.language].name}
             </Typography>
             <Markdown>{activeTask.description}</Markdown>
           </Box>
@@ -231,7 +231,11 @@ export function CandidateWorkspace({ candidateToken, onAccessLost }: Props) {
 
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}>
           <EditorToolbar
-            onFormat={isActive ? () => ed?.getAction('editor.action.formatDocument')?.run() : undefined}
+            onFormat={
+              isActive && canFormat(activeTask.language)
+                ? () => ed?.getAction('editor.action.formatDocument')?.run()
+                : undefined
+            }
           />
           <Box sx={{ flex: 1, minHeight: 300 }}>
             <CodeEditor

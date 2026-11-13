@@ -21,7 +21,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type { ActivityEventDto, InsightDto, SessionCreatedResponse } from '@ti/shared';
+import { LANGUAGE_LABELS, type ActivityEventDto, type InsightDto, type SessionCreatedResponse } from '@ti/shared';
 import type { editor } from 'monaco-editor';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
@@ -300,7 +300,7 @@ export function MonitorPage() {
             )}
           </Box>
           <Typography variant="caption" color="text.secondary" sx={{ px: 1.5, py: 0.5 }}>
-            {doc ? `Version ${doc.version} · ${shownTask?.language}` : '—'} · read-only. Highlights from the timeline refer
+            {doc ? `Version ${doc.version} · ${shownTask ? LANGUAGE_LABELS[shownTask.language].name : ''}` : '—'} · read-only. Highlights from the timeline refer
             to the current code.
           </Typography>
         </Paper>

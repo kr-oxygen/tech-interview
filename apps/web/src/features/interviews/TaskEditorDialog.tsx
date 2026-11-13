@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import type { Language, TaskDto } from '@ti/shared';
+import { LANGUAGES, LANGUAGE_LABELS, type Language, type TaskDto } from '@ti/shared';
 import { useEffect, useState } from 'react';
 import { CodeEditor } from '../../components/CodeEditor/CodeEditor';
 import { modelPath } from '../../components/CodeEditor/monacoSetup';
@@ -56,8 +56,11 @@ export function TaskEditorDialog({ interviewId, task, onClose }: Props) {
               onChange={(e) => setLanguage(e.target.value as Language)}
               sx={{ minWidth: 180 }}
             >
-              <MenuItem value="typescript">TypeScript</MenuItem>
-              <MenuItem value="javascript">JavaScript</MenuItem>
+              {LANGUAGES.map((l) => (
+                <MenuItem key={l} value={l}>
+                  {LANGUAGE_LABELS[l].name}
+                </MenuItem>
+              ))}
             </TextField>
           </Stack>
           <TextField

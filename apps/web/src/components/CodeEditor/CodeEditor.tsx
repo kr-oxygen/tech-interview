@@ -52,7 +52,10 @@ export function CodeEditor({
         lineNumbers: 'on',
         automaticLayout: true,
         scrollBeyondLastLine: false,
-        tabSize: 2,
+        // gofmt style: tabs, shown 4 wide.
+        tabSize: language === 'go' ? 4 : 2,
+        insertSpaces: language !== 'go',
+        detectIndentation: false,
         formatOnPaste: false,
         renderWhitespace: 'selection',
         ...options,
