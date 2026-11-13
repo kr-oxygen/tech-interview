@@ -1,0 +1,25 @@
+# Keep host build artefacts out of the image: the build stage installs and builds everything
+# inside Linux. A host node_modules (e.g. macOS) holds native binaries that won't run there.
+**/node_modules
+**/dist
+apps/api/src/generated
+**/*.tsbuildinfo
+
+# Secrets and local settings
+**/.env
+**/.env.*
+!.env.example
+!.env.prod.example
+
+# Tests, reports, tooling
+e2e
+test-results
+playwright-report
+coverage
+**/*.log
+.git
+.github
+.vscode
+.idea
+.DS_Store
+docs

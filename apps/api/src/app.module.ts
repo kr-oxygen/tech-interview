@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { ClientIpThrottlerGuard } from './common/client-ip-throttler.guard';
+import { webStaticOptions } from './common/web-static';
+import { AppConfig } from './config/app-config.service';
 import { AppConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { HealthModule } from './modules/health/health.module';
 import { CandidatesModule } from './modules/candidates/candidates.module';
 import { InterviewsModule } from './modules/interviews/interviews.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
@@ -19,6 +24,8 @@ import { WebSocketModule } from './modules/websocket/websocket.module';
     PrismaModule,
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
     ScheduleModule.forRoot(),
+    ServeStaticModule.forRootAsync({ inject: [AppConfig], useFactory: webStaticOptions }),
+    HealthModule,
     RealtimeModule,
     AuthModule,
     InterviewsModule,
@@ -28,6 +35,6 @@ import { WebSocketModule } from './modules/websocket/websocket.module';
     WebSocketModule,
     RetentionModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [{ provide: APP_GUARD, useClass: ClientIpThrottlerGuard }],
 })
 export class AppModule {}

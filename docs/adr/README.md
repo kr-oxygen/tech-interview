@@ -15,3 +15,4 @@ Format: short [Nygard-style](https://cognitect.com/blog/2011/11/15/documenting-a
 | [0009](0009-candidate-as-entity.md) | Candidate as a first-class entity without an account | Accepted |
 | [0010](0010-snapshots-and-retention.md) | Snapshot strategy and data retention | Accepted |
 | [0011](0011-prisma-7-driver-adapter.md) | Prisma 7 with the PostgreSQL driver adapter | Accepted |
+| [0012](0012-single-image-explicit-migrations.md) | Single image, single origin, explicit migrations | Accepted |

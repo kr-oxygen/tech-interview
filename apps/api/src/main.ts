@@ -5,10 +5,24 @@ import { text } from 'express';
 import { AppModule } from './app.module';
 import { AppConfig } from './config/app-config.service';
 import { ConfiguredIoAdapter } from './modules/websocket/io.adapter';
+import { assertMigrationsApplied } from './prisma/migration-check';
+import { PrismaService } from './prisma/prisma.service';
+
+/** Parses TRUST_PROXY into an Express `trust proxy` value. */
+function trustProxy(raw: string): boolean | number | string {
+  if (raw === 'true') return true;
+  if (raw === 'false' || raw === '') return false;
+  return /^\d+$/.test(raw) ? Number(raw) : raw;
+}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: true });
   const config = app.get(AppConfig);
+
+  if (config.get('NODE_ENV') === 'production') {
+    await assertMigrationsApplied(app.get(PrismaService), config.get('MIGRATIONS_DIR'));
+  }
+  app.set('trust proxy', trustProxy(config.get('TRUST_PROXY')));
 
   app.setGlobalPrefix('api');
   app.enableCors({ origin: config.get('WEB_ORIGIN').split(','), credentials: true });

@@ -46,6 +46,8 @@ pnpm dev                                     # API on :3001, web on :5173
 
 Open http://localhost:5173, register as an interviewer, create an interview with a task, start a session, and open the invite link in another browser (or a private window) as the candidate.
 
+To run it on a server, see [`docs/self-hosting.md`](docs/self-hosting.md): one Docker image, an explicit migrate step, and a compose file for PostgreSQL.
+
 To show a local instance to someone over the internet, use a tunnel such as ngrok or cloudflared. See "Sharing over the internet" in [`CLAUDE.md`](CLAUDE.md).
 
 ## Tests

@@ -111,7 +111,8 @@ export class SessionsController {
   async snapshotList(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
-    @Query('taskId') taskId?: string,
+    // Validated so a malformed id is a 400, not a Prisma error on the uuid column.
+    @Query('taskId', new ParseUUIDPipe({ optional: true })) taskId?: string,
   ) {
     await this.sessions.assertOwner(user.id, id);
     return this.snapshots.list(id, taskId);

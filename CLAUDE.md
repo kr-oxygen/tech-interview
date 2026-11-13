@@ -63,6 +63,16 @@ ngrok http 4173                 # or: cloudflared tunnel --url http://localhost:
 
 One tunnel is enough because the web server proxies the API and WebSocket. Allowed tunnel hosts are listed in `apps/web/vite.config.ts` (`allowedHosts`).
 
+## Production (Docker)
+
+One image (`docker/Dockerfile`) holds the API, the built web app and the Prisma CLI. The API serves `apps/web/dist` when `WEB_DIST_DIR` is set (`common/web-static.ts`), so web, `/api` and `/socket.io` share one origin. Full guide: `docs/self-hosting.md`; decision: ADR-0012.
+
+- **Migrations are an explicit step** (`docker/entrypoint.sh migrate`), never run on start. In production the app refuses to start with pending migrations (`prisma/migration-check.ts`).
+- **Migrations must be backward compatible**: the previous image must run on the new schema. Add nullable or defaulted columns; rename or drop across two releases; never change a type in place.
+- **Rate limits** are per client IP (`ClientIpThrottlerGuard`: `CLIENT_IP_HEADER`, else `req.ip` with `TRUST_PROXY`). Auth limits are strict only when `NODE_ENV=production` (`common/auth-throttles.ts`).
+- `GET /api/health` is public and returns only `{ status, activeSessions }`.
+- In e2e tests that need static serving, create the app with `NestFactory`. `Test.createTestingModule` has no HTTP adapter when serve-static picks its loader, so it would serve nothing.
+
 ## Conventions
 
 - British English in docs, comments and UI copy. Dates in the UI use DD/MM/YYYY (`lib/format.ts`).
