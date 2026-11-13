@@ -1,0 +1,21 @@
+{
+  "name": "tech-interview",
+  "private": true,
+  "packageManager": "pnpm@10.6.1",
+  "scripts": {
+    "dev": "pnpm --filter @ti/shared build && pnpm -r --parallel --filter @ti/shared --filter @ti/api --filter @ti/web dev",
+    "build": "pnpm --filter @ti/shared build && pnpm --filter @ti/api build && pnpm --filter @ti/web build",
+    "typecheck": "pnpm --filter @ti/shared build && pnpm --filter @ti/api typecheck && pnpm --filter @ti/web exec tsc -b",
+    "test": "pnpm --filter @ti/shared build && pnpm --filter @ti/api test && pnpm --filter @ti/web test",
+    "test:api:e2e": "pnpm --filter @ti/api test:e2e",
+    "e2e": "playwright test",
+    "smoke": "node apps/api/test/smoke.mjs",
+    "lint": "pnpm --filter @ti/api lint && pnpm --filter @ti/web lint",
+    "db:up": "docker compose up -d postgres",
+    "db:migrate": "pnpm --filter @ti/api exec prisma migrate deploy",
+    "share": "pnpm build && pnpm -r --parallel --filter @ti/api --filter @ti/web serve"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.50.1"
+  }
+}

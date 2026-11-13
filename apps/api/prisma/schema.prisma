@@ -1,0 +1,167 @@
+// Prisma 7: the connection URL lives in ../prisma.config.ts (CLI) and is passed to
+// the PostgreSQL driver adapter at runtime (src/prisma/prisma.service.ts).
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Language {
+  javascript
+  typescript
+}
+
+enum SessionStatus {
+  CREATED
+  ACTIVE
+  LOCKED
+  ENDED
+  EXPIRED
+}
+
+enum LockReason {
+  PAGE_UNLOAD
+  DISCONNECT_TIMEOUT
+}
+
+enum SnapshotReason {
+  INITIAL
+  PERIODIC
+  LARGE_CHANGE
+  TASK_SWITCH
+  SESSION_END
+  RESYNC
+}
+
+model User {
+  id           String      @id @default(uuid()) @db.Uuid
+  email        String      @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime    @default(now())
+  interviews   Interview[]
+  candidates   Candidate[]
+}
+
+model Interview {
+  id          String             @id @default(uuid()) @db.Uuid
+  title       String
+  description String             @default("")
+  createdById String             @db.Uuid
+  createdBy   User               @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  tasks       InterviewTask[]
+  sessions    InterviewSession[]
+
+  @@index([createdById])
+}
+
+model InterviewTask {
+  id          String             @id @default(uuid()) @db.Uuid
+  interviewId String             @db.Uuid
+  interview   Interview          @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  title       String
+  description String             @default("")
+  initialCode String             @default("")
+  language    Language           @default(typescript)
+  order       Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  taskStates  SessionTaskState[]
+
+  @@index([interviewId, order])
+}
+
+model Candidate {
+  id        String             @id @default(uuid()) @db.Uuid
+  ownerId   String             @db.Uuid
+  owner     User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  notes     String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  sessions  InterviewSession[]
+
+  @@index([ownerId, email])
+  @@index([ownerId, name])
+}
+
+model InterviewSession {
+  id                    String             @id @default(uuid()) @db.Uuid
+  interviewId           String             @db.Uuid
+  interview             Interview          @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  candidateId           String             @db.Uuid
+  candidate             Candidate          @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  status                SessionStatus      @default(CREATED)
+  durationMinutes       Int                @default(60)
+  inviteTokenHash       String             @unique
+  inviteExpiresAt       DateTime
+  inviteConsumedAt      DateTime?
+  candidateTokenVersion Int                @default(0)
+  consentAcceptedAt     DateTime?
+  activeTaskId          String?            @db.Uuid
+  lastSequenceNumber    Int                @default(0)
+  lockedAt              DateTime?
+  lockReason            LockReason?
+  lockCount             Int                @default(0)
+  startedAt             DateTime?
+  endedAt               DateTime?
+  createdAt             DateTime           @default(now())
+  events                ActivityEvent[]
+  snapshots             CodeSnapshot[]
+  taskStates            SessionTaskState[]
+
+  @@index([interviewId])
+  @@index([candidateId])
+  @@index([status, endedAt])
+}
+
+model SessionTaskState {
+  id              String           @id @default(uuid()) @db.Uuid
+  sessionId       String           @db.Uuid
+  session         InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  taskId          String           @db.Uuid
+  task            InterviewTask    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  currentContent  String
+  documentVersion Int              @default(0)
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([sessionId, taskId])
+}
+
+/// Append-only. Never updated; deleted only by the retention job.
+model ActivityEvent {
+  id              String           @id @default(uuid()) @db.Uuid
+  sessionId       String           @db.Uuid
+  session         InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  taskId          String?          @db.Uuid
+  eventType       String
+  payload         Json             @default("{}")
+  clientEventId   String
+  clientTimestamp DateTime?
+  timestamp       DateTime         @default(now())
+  sequenceNumber  Int
+
+  @@unique([sessionId, clientEventId])
+  @@unique([sessionId, sequenceNumber])
+  @@index([sessionId, timestamp])
+}
+
+model CodeSnapshot {
+  id              String           @id @default(uuid()) @db.Uuid
+  sessionId       String           @db.Uuid
+  session         InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  taskId          String           @db.Uuid
+  documentVersion Int
+  content         String
+  reason          SnapshotReason
+  createdAt       DateTime         @default(now())
+
+  @@index([sessionId, taskId, documentVersion])
+}
