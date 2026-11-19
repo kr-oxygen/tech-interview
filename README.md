@@ -66,7 +66,7 @@ pnpm e2e            # Playwright: interviewer and candidate browsers, full flow
 
 - [`CLAUDE.md`](CLAUDE.md): commands, layout, and the invariants to read before changing realtime code.
 - [`docs/adr/`](docs/adr/): Architecture Decision Records.
-- [`initial_spec.md`](initial_spec.md): the original product specification (in Russian).
+- [`initial_spec.md`](initial_spec.md): the original product specification.
 
 ## Privacy
 
