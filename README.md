@@ -4,7 +4,7 @@ A browser-based platform for live technical interviews. The interviewer prepares
 
 ## Features
 
-- **Interviews and tasks.** JavaScript or TypeScript tasks, each with starter code and a Markdown description. Candidates can be reused across sessions.
+- **Interviews and tasks.** JavaScript, TypeScript or Go tasks, each with starter code and a Markdown description. Candidates can be reused across sessions.
 - **One-time invite links.** Only a hash of each token is stored. The candidate sees a consent screen that lists exactly what is recorded.
 - **Live monitoring.** The interviewer has a read-only Monaco editor that follows the candidate's cursor, live connection and tab-visibility status, and a timer.
 - **Activity timeline.** It records:
@@ -19,6 +19,7 @@ A browser-based platform for live technical interviews. The interviewer prepares
 - **Leaving the page pauses the session.** Closing or reloading the tab locks the session. The interviewer can let the candidate back in through the same link, and the code is kept.
 - **Reliable sync.** Edits are versioned deltas with server-side resync. Events go through an outbox with acknowledgements and are deduplicated. Snapshots are stored periodically and on large changes.
 - **React-ready editor.** TSX/JSX support with React typings.
+- **Go support.** Go tasks get syntax highlighting and tab indentation. There are no diagnostics, IntelliSense or formatter for Go (Monaco ships none).
 
 The full event history and code snapshots are stored, so a replay view can be built later.
 
